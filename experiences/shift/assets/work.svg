@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 728" preserveAspectRatio="xMidYMid meet" width="1200" height="728" role="img" aria-label="手绘工作室：窗外是树，桌上留着未完成的工作，黑色小代理在右侧等你换班">
+        <defs><style>@font-face{font-family:LittleHand;src:url(../../翻面换班/assets/handwriting.woff)} text{font-family:LittleHand,cursive}</style>
+          <filter id="wobble"><feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="8" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="2"/></filter>
+          <pattern id="wallLines" width="17" height="17" patternUnits="userSpaceOnUse"><path d="m3 4 1 .3M12 13l1-.5" stroke="#a6a48b" stroke-width=".8" opacity=".3"/></pattern>
+          <pattern id="stripe" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 0v12" stroke="#d3cfb1" stroke-width="2"/></pattern>
+          <clipPath id="windowClip"><path d="M480 71 799 67 801 351 478 352Z"/></clipPath>
+        </defs>
+        <path fill="#e8e7d1" d="M0 0h1200v728H0z"/><path fill="url(#wallLines)" d="M0 0h1200v728H0z"/>
+        <path d="M0 605Q540 586 1200 606V728H0Z" fill="#c7c9a9"/>
+        <path d="M0 606Q536 590 1200 606" fill="none" stroke="#8e9677" stroke-width="2"/>
+        <path d="m51 637 170 6m28 31 222-8m370-25 270 10M36 708l117-5m685 3 263-4" stroke="#a7ae8b" fill="none" stroke-width="2"/>
+        <g filter="url(#wobble)">
+        <path d="M466 59 811 55 815 365 464 365Z" fill="#889571"/>
+        <path d="M480 71 799 67 801 351 478 352Z" fill="#f3df9d"/>
+        <g clip-path="url(#windowClip)"><circle cx="737" cy="143" r="62" fill="#e5ab58"/><path d="M457 292Q535 203 611 253T840 201V375H451Z" fill="#c6cd94"/><path d="M479 329Q599 257 707 313T829 300V372H476Z" fill="#9aab78"/>
+        <path d="m547 383 6-342 19-19-11 357" fill="#6a7957"/><g fill="#809561"><path d="M559 193Q433 144 460 93q63 4 99 100Z"/><path d="M560 153Q558 71 622 56q15 62-62 97Z"/><path d="M553 272q-119-44-112-108 87 4 112 108Z"/><path d="M560 232q25-92 94-89 8 60-94 89Z"/></g></g>
+        <path d="m641 69-2 282M480 216l319-3" stroke="#7e8b67" stroke-width="9" fill="none"/><path d="M450 362 831 360 827 375 451 375Z" fill="#738361"/>
+        <path d="m485 369 197 0-255 219-160-3Z" fill="#f3e5b2" opacity=".63"/>
+        <path d="M83 91q119-10 222-3l5 150-226 1Z" fill="#c7c49e"/><path d="m97 102 192-2 4 127-195-2Z" fill="#d9d6b5"/>
+        <path d="m144 110 39-3 3 28-39 1Z" fill="#e8b968"/><path d="M129 146q45-9 114-2m-112 16 96-1m-89 16 74-1" stroke="#989d78" stroke-width="2" fill="none"/>
+        
+        <path d="M887 112q62-12 160-4l-3 16-157 3Z" fill="#87956d"/>
+        <path d="m904 65 19-3 8 48-24 2Z" fill="#cf9e69"/><path d="m930 55 18 3-2 52-16 2Z" fill="#a4ad78"/><path d="m953 69 16-2 6 43-22 2Z" fill="#6d8066"/>
+        <path d="M1000 94q-6-32 17-28 28 6 17 29l-6 15-24 1Z" fill="#ece1b9"/>
+        <path d="M1017 70q-10-40-31-36 1 25 31 36m2 8q35-35 44-17-13 22-44 17" fill="#7e8e62"/>
+        <path d="M319 443q211-8 473-3l26 24-509 5Z" fill="#c18e5f"/>
+        <path d="M312 468 816 465l-2 16-502 3Z" fill="#987347"/>
+        <path d="m352 482-14 157 21 1 14-158m368-2 10 162 21-1-12-164" fill="#927448"/>
+        <path d="M444 445 456 317q53-11 153-4l10 128Z" fill="#4a5a53"/>
+        <path d="m469 326 126-2 11 99-146 3Z" fill="#b0c0a1"/>
+        <path d="m525 338 41 1m-75 16 91-2m-89 14 52 1m-53 15 84-1" stroke="#6e8a74" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="m508 446 65-1-3 6-68 1Z" fill="#3f4d48"/><path d="m470 453 135-3 13 8-151 3Z" fill="#727d69"/>
+        <path d="M634 433q-7-26 0-45l34-1 2 46q-16 9-36 0Z" fill="#f0d39b"/><path d="M670 396q27-5 17 20-6 12-16 8" stroke="#d2b477" stroke-width="7" fill="none"/>
+        <g class="steam" fill="none" stroke="#a19e7c" stroke-width="2"><path d="M648 373q-14-14 0-25m10 29q12-14 1-24"/></g>
+        <path d="m693 437 63-3 8 11-72 5Z" fill="#ebdfb9"/><path d="m709 436 28-29 7 4-24 27" stroke="#586c58" stroke-width="4" fill="none"/>
+        <path d="M482 560q-28-87 13-95 47-11 72 13l6 100Z" fill="#727e60"/>
+        <path d="M458 568q32-12 141-3l8 28-161-1Z" fill="#7e896b"/>
+        <path d="m469 592-10 87m121-88 19 86" stroke="#6d7158" stroke-width="12" fill="none"/>
+        <path d="m347 638 317 1 42 55-414 4Z" fill="#a3ad82"/>
+        <path d="m322 682 342-3m-329 12 18 7m15-18 23 21m17-20 22 20m27-21 21 20m29-21 19 20m35-21 23 20m27-20 20 19m25-18 15 17" stroke="#cbd1a7" stroke-width="2" fill="none"/>
+        <path d="M860 618q-20-68-4-129l86-2q23 66 7 132Z" fill="#bb986c"/>
+        <path d="m872 499 59-2-3 107-49 1Z" fill="url(#stripe)"/>
+        <g fill="#7e9364"><path d="M899 494q-134-48-117-146 75 4 117 146Z"/><path d="M902 484q-24-156 60-185 47 91-60 185Z"/><path d="M903 500q26-116 127-99-17 90-127 99Z"/></g>
+        <g fill="none" stroke="#5e7854" stroke-width="2"><path d="m902 495-99-120m98 114 57-159m-53 167 108-80"/></g>
+        <path d="M1029 343q77-14 119 12l12 215-140 2Z" fill="#c8c5a5"/>
+        <path d="m1043 356 88 1 1 90-93-1Zm-9 104 99 0 4 96-107 1Z" fill="#a8ad88"/>
+        <path d="m1053 379 17 1m7-1 33 1m-59 14 60 1m-57 16 44-1" stroke="#7c8b69" stroke-width="3" fill="none"/>
+        
+        <path d="m1062 520 52-2" stroke="#d5cda6" stroke-width="3"/>
+        </g>
+        <g id="frontHelper" transform="translate(990 591) rotate(7)">
+          <path d="M-40 22q-16-40 0-70l4-31 29 23q16-5 29 0l25-21-1 31q27 28 9 69Z" fill="#343d39" filter="url(#wobble)"/>
+          <g class="blink" fill="none" stroke="#e3c56d" stroke-width="4"><ellipse cx="-13" cy="-19" rx="9" ry="12"/><ellipse cx="18" cy="-19" rx="9" ry="12"/></g>
+          <path d="m-45 3-22-13m111 10 25-22" stroke="#343d39" stroke-width="10" stroke-linecap="round"/>
+          <path d="M-37 18q36 9 71-2l0 15q-37 11-70-1Z" fill="#d69b54"/><path d="m19 24 6 31 15-4-7-32" fill="#d69b54"/>
+          <path d="m-28 25-8 16m62-17 8 15" stroke="#343d39" stroke-width="8" stroke-linecap="round"/>
+        </g>
+        
+        <path d="m971 629 11 11-3-12" stroke="#7e8865" fill="none" stroke-width="1.6"/>
+        <g fill="#879069" opacity=".7"><circle cx="114" cy="653" r="2"/><circle cx="1086" cy="652" r="2"/><path d="m96 659 4-10 4 12m1012-2 4-10 5 12" stroke="#879069" stroke-width="1.5" fill="none"/></g>
+        
+      </svg>

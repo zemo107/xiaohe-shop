@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>海上云团</title>
+<style>
+  html,body { margin:0; width:100%; height:100%; overflow:hidden; background:#168ac3; }
+  canvas { display:block; width:100vw; height:100vh; }
+  #demo { position:fixed; right:18px; top:18px; padding:12px 14px; background:#ffffffde; color:#163e50; font:13px system-ui; border-radius:10px; box-shadow:0 5px 22px #093c5b36; }
+  #demo button { margin-left:8px; padding:5px 9px; border:1px solid #8fb5c8; border-radius:6px; background:white; color:#163e50; cursor:pointer; }
+  #demo[hidden], #icons[hidden] { display:none; }
+  .demo-icon { position:fixed; width:90px; height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:#17435a; font:12px system-ui; text-shadow:0 1px 2px #fff; cursor:grab; touch-action:none; user-select:none; }
+  .demo-icon:active { cursor:grabbing; }
+  .demo-icon svg { width:38px; height:38px; filter:drop-shadow(0 2px 3px #17628a55); }
+</style>
+<canvas id="sea"></canvas><div id="icons" hidden></div><div id="demo" hidden>拖动文件图标，观察云团吸附 <button id="addIcon">添加文件</button><button id="removeIcon">移除文件</button></div>
+<script>
+const canvas = document.getElementById('sea');
+const ctx = canvas.getContext('2d', {alpha:false});
+const oceanImages = ['ocean-base.png','ocean-frame-1.png','ocean-frame-2.png'].map(src => { const image = new Image(); image.src = src; return image; });
+const sailImage = new Image(); sailImage.src = 'sailboat.png';
+const birdImages = ['bird-wide.png','bird-mid.png','bird-tucked.png'].map(src => { const image = new Image(); image.src = src; return image; });
+const cloudCanvas = document.createElement('canvas');
+const cloudCtx = cloudCanvas.getContext('2d');
+const demo = !new URLSearchParams(location.search).has('desktop');
+let rects = demo ? [{x:110,y:130,w:90,h:100},{x:215,y:130,w:90,h:100},{x:120,y:240,w:90,h:100}] : [];
+let clouds = [], targetClouds = [], last = 0;
+const birds=[];
+let nextBirdAt=8;
+document.getElementById('demo').hidden = !demo;
+document.getElementById('icons').hidden = !demo;
+const rand = (n) => { let x = Math.sin(n * 127.1 + 78.2) * 43758.5453; return x - Math.floor(x); };
+const clamp = (v,a,b) => Math.max(a, Math.min(b,v));
+
+function setIconRects(value) {
+  rects = value.filter(r => Number.isFinite(r.x) && Number.isFinite(r.y) && r.w > 0 && r.h > 0);
+  targetClouds = rects.map((r,i) => ({x:r.x+r.w/2,y:r.y+r.h/2,rx:r.w*.9+35,ry:r.h*.65+24,seed:i}));
+  if (!clouds.length) clouds = targetClouds.map(c => ({...c,rx:0,ry:0}));
+}
+window.setIconRects = setIconRects;
+setIconRects(rects);
+
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  canvas.width = Math.round(innerWidth*dpr); canvas.height = Math.round(innerHeight*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  cloudCanvas.width = Math.round(innerWidth*dpr); cloudCanvas.height = Math.round(innerHeight*dpr);
+  cloudCtx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener('resize', resize); resize();
+
+function water(time,w,h) {
+  const drawOcean=(image,alpha)=>{
+    if(!image.complete || !image.naturalWidth) return false;
+    const scale=Math.max(w/image.width,h/image.height);
+    const dw=image.width*scale,dh=image.height*scale;
+    ctx.globalAlpha=alpha;
+    ctx.drawImage(image,(w-dw)/2,(h-dh)/2,dw,dh);
+    ctx.globalAlpha=1;
+    return true;
+  };
+  const phase=(time/3.2)%4;
+  const sequence=[0,1,2,1,0];
+  const index=Math.floor(phase);
+  const blend=(1-Math.cos((phase-index)*Math.PI))/2;
+  const first=oceanImages[sequence[index]],second=oceanImages[sequence[index+1]];
+  if(!drawOcean(first,1)) {
+    const base=ctx.createLinearGradient(0,0,w,h);
+    base.addColorStop(0,'#1271b5');base.addColorStop(1,'#27b6d4');
+    ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
+  }
+  drawOcean(second,blend);
+}
+
+function drawClouds(time,w,h) {
+  cloudCtx.clearRect(0,0,w,h);
+  const pulls=clouds.map(()=>({x:0,y:0}));
+  const bridges=[];
+  for(let i=0;i<clouds.length;i++) for(let j=i+1;j<clouds.length;j++) {
+    const a=clouds[i],b=clouds[j];
+    if(a.rx<2||b.rx<2) continue;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
+    const ux=dx/d,uy=dy/d;
+    const ar=Math.hypot(a.rx*ux,a.ry*uy),br=Math.hypot(b.rx*ux,b.ry*uy);
+    const gap=d-ar-br;
+    const strength=clamp((95-gap)/105,0,1);
+    if(strength<=0) continue;
+    const pull=12*strength;
+    pulls[i].x+=ux*pull;pulls[i].y+=uy*pull;
+    pulls[j].x-=ux*pull;pulls[j].y-=uy*pull;
+    bridges.push({a,b,ux,uy,ar,br,strength});
+  }
+  clouds.forEach((c,i)=>{
+    c.pullX=(c.pullX||0)+(pulls[i].x-(c.pullX||0))*.11;
+    c.pullY=(c.pullY||0)+(pulls[i].y-(c.pullY||0))*.11;
+  });
+  for (const c of clouds) {
+    if(c.rx<2) continue;
+    const cx=c.x+c.pullX,cy=c.y+c.pullY+Math.sin(time*.24+c.seed)*2;
+    const shapeX=.88+rand(c.seed*19+7)*.22;
+    const shapeY=.88+rand(c.seed*23+11)*.22;
+    const lean=(rand(c.seed*31+13)-.5)*.16;
+    cloudCtx.save();cloudCtx.translate(cx,cy);cloudCtx.rotate(lean);cloudCtx.scale(c.rx*shapeX,c.ry*shapeY);
+    const core=cloudCtx.createRadialGradient(0,0,.12,0,0,1);
+    core.addColorStop(0,'rgba(255,255,255,.93)');
+    core.addColorStop(.55,'rgba(255,255,255,.75)');
+    core.addColorStop(1,'rgba(255,255,255,0)');
+    cloudCtx.fillStyle=core;cloudCtx.beginPath();cloudCtx.arc(0,0,1,0,Math.PI*2);cloudCtx.fill();
+    cloudCtx.restore();
+    for(let i=0;i<17;i++) {
+      const a=i*2.39996+rand(c.seed*47+3)*.8, t=Math.sqrt((i+.5)/17);
+      const spread=.68+rand(i*17+c.seed*53)*.18;
+      const px=cx+Math.cos(a)*c.rx*t*spread*shapeX, py=cy+Math.sin(a)*c.ry*t*spread*shapeY;
+      const r=(.26+rand(i+c.seed*31)*.27)*Math.min(c.rx,c.ry);
+      const puff=cloudCtx.createRadialGradient(px-r*.2,py-r*.25,1,px,py,r*1.65);
+      puff.addColorStop(0,'rgba(255,255,255,.74)');
+      puff.addColorStop(.5,'rgba(255,255,255,.52)');
+      puff.addColorStop(1,'rgba(255,255,255,0)');
+      cloudCtx.fillStyle=puff;cloudCtx.beginPath();cloudCtx.arc(px,py,r*1.65,0,Math.PI*2);cloudCtx.fill();
+    }
+  }
+  for(const bridge of bridges) {
+    const {a,b,ux,uy,ar,br,strength}=bridge;
+    const x1=a.x+a.pullX+ux*ar*.68,y1=a.y+a.pullY+uy*ar*.68;
+    const x2=b.x+b.pullX-ux*br*.68,y2=b.y+b.pullY-uy*br*.68;
+    const midX=(x1+x2)/2,midY=(y1+y2)/2;
+    const length=Math.hypot(x2-x1,y2-y1)+18;
+    const width=Math.min(a.ry,b.ry)*(.44+.28*strength);
+    cloudCtx.save();cloudCtx.translate(midX,midY);cloudCtx.rotate(Math.atan2(uy,ux));
+    cloudCtx.scale(Math.max(length/2,1),Math.max(width,1));
+    const join=cloudCtx.createRadialGradient(0,0,.08,0,0,1);
+    join.addColorStop(0,`rgba(255,255,255,${(.57+.19*strength).toFixed(3)})`);
+    join.addColorStop(.55,`rgba(255,255,255,${(.39+.17*strength).toFixed(3)})`);
+    join.addColorStop(1,'rgba(255,255,255,0)');
+    cloudCtx.fillStyle=join;cloudCtx.beginPath();cloudCtx.arc(0,0,1,0,Math.PI*2);cloudCtx.fill();cloudCtx.restore();
+  }
+  cloudCtx.globalCompositeOperation='source-in';
+  const tone=cloudCtx.createLinearGradient(0,0,0,h);
+  tone.addColorStop(0,'rgba(255,255,255,.94)');
+  tone.addColorStop(1,'rgba(229,246,254,.84)');
+  cloudCtx.fillStyle=tone;cloudCtx.fillRect(0,0,w,h);
+  cloudCtx.globalCompositeOperation='source-atop';
+  for(const c of clouds) {
+    if(c.rx<2) continue;
+    const cx=c.x+c.pullX,cy=c.y+c.pullY+Math.sin(time*.24+c.seed)*2;
+    const shapeX=.88+rand(c.seed*19+7)*.22;
+    const shapeY=.88+rand(c.seed*23+11)*.22;
+    for(let i=0;i<17;i++) {
+      const a=i*2.39996+rand(c.seed*47+3)*.8,t=Math.sqrt((i+.5)/17);
+      const spread=.68+rand(i*17+c.seed*53)*.18;
+      const px=cx+Math.cos(a)*c.rx*t*spread*shapeX,py=cy+Math.sin(a)*c.ry*t*spread*shapeY;
+      const r=(.45+rand(i+c.seed*31)*.3)*Math.min(c.rx,c.ry);
+      const g=cloudCtx.createRadialGradient(px-r*.25,py-r*.3,1,px,py,r*2.1);
+      g.addColorStop(0,'rgba(255,255,255,.22)');
+      g.addColorStop(.55,'rgba(246,251,255,.10)');
+      g.addColorStop(1,'rgba(235,249,255,0)');
+      cloudCtx.fillStyle=g;cloudCtx.beginPath();cloudCtx.arc(px,py,r*2.1,0,Math.PI*2);cloudCtx.fill();
+    }
+  }
+  cloudCtx.globalCompositeOperation='source-over';
+  ctx.save();
+  ctx.filter='blur(2px)';
+  ctx.shadowColor='rgba(9,54,88,.22)';ctx.shadowBlur=26;ctx.shadowOffsetX=9;ctx.shadowOffsetY=15;
+  ctx.drawImage(cloudCanvas,0,0,w,h);
+  ctx.restore();
+}
+
+function sailboat(time,w,h) {
+  const x=w*.69+Math.sin(time*.13)*13, y=h*.49+Math.cos(time*.17)*7;
+  const blocked=rects.some(r=>x>r.x-140&&x<r.x+r.w+140&&y>r.y-120&&y<r.y+r.h+120);
+  if(blocked) return;
+  ctx.save();ctx.translate(x,y);ctx.scale(clamp(w/1440,.65,1.25),clamp(w/1440,.65,1.25));
+  if(sailImage.complete && sailImage.naturalWidth) {
+    ctx.drawImage(sailImage,-78,-98,156,156);
+    ctx.restore();return;
+  }
+  ctx.fillStyle='rgba(14,63,96,.3)';ctx.beginPath();ctx.ellipse(12,18,34,7,-.13,0,7);ctx.fill();
+  ctx.fillStyle='#f7f4e9';ctx.beginPath();ctx.moveTo(0,-47);ctx.lineTo(-17,8);ctx.lineTo(0,7);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(3,-41);ctx.lineTo(3,8);ctx.lineTo(21,7);ctx.fill();
+  ctx.strokeStyle='#e5e8e2';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(1,-49);ctx.lineTo(1,12);ctx.stroke();
+  ctx.fillStyle='#986638';ctx.beginPath();ctx.moveTo(-28,12);ctx.quadraticCurveTo(0,22,29,11);ctx.lineTo(23,18);ctx.quadraticCurveTo(0,28,-23,18);ctx.fill();
+  ctx.restore();
+}
+
+function drawBirds(time,w,h) {
+  if(time>=nextBirdAt) {
+    const group=1+Math.floor(rand(Math.floor(time)*7)*3);
+    const fromLeft=rand(Math.floor(time)*11)>.5;
+    for(let i=0;i<group;i++) birds.push({
+      born:time+i*.9,
+      x:fromLeft?-36:w+36,
+      y:h*(.15+rand(Math.floor(time)*17+i)*.52),
+      speed:(fromLeft?1:-1)*(35+rand(i+Math.floor(time))*14),
+      size:33+rand(i+Math.floor(time)*3)*9,
+      phase:i*1.8
+    });
+    nextBirdAt=time+20+rand(Math.floor(time)*23)*13;
+  }
+  for(let i=birds.length-1;i>=0;i--) {
+    const b=birds[i], age=time-b.born;
+    if(age<0) continue;
+    const x=b.x+b.speed*age, y=b.y+Math.sin(age*.5+b.phase)*5;
+    if(x < -50 || x > w+50) { birds.splice(i,1); continue; }
+    const cycle=[0,1,2,1,0], image=birdImages[cycle[Math.floor((age*4+b.phase)%cycle.length)]];
+    if(!image.complete || !image.naturalWidth) continue;
+    ctx.save();ctx.translate(x,y);ctx.scale(b.speed>0?1:-1,1);
+    ctx.drawImage(image,-b.size,-b.size,b.size*2,b.size*2);
+    ctx.restore();
+  }
+}
+
+function frame(ms) {
+  requestAnimationFrame(frame);
+  if(ms-last<33) return;
+  last=ms;
+  const t=ms/1000,w=innerWidth,h=innerHeight;
+  water(t,w,h);
+  const count=Math.max(clouds.length,targetClouds.length);
+  for(let i=0;i<count;i++) {
+    const goal=targetClouds[i]||{...clouds[i],rx:0,ry:0};
+    if(!clouds[i]) clouds[i]={...goal,rx:0,ry:0};
+    const c=clouds[i];
+    for(const k of ['x','y','rx','ry']) c[k]+=(goal[k]-c[k])*.075;
+  }
+  if(clouds.length>targetClouds.length && clouds.at(-1).rx<1) clouds.pop();
+  drawClouds(t,w,h);
+  sailboat(t,w,h);
+  drawBirds(t,w,h);
+}
+requestAnimationFrame(frame);
+if(demo) {
+  const layer=document.getElementById('icons');
+  const fileIcon='<svg viewBox="0 0 44 44" aria-hidden="true"><path d="M10 3h17l9 9v28H10z" fill="#f7fcff" stroke="#5d9bb6" stroke-width="2"/><path d="M27 3v10h9" fill="none" stroke="#5d9bb6" stroke-width="2"/><path d="M15 21h16M15 26h16M15 31h12" stroke="#8bb6c9" stroke-width="2"/></svg>';
+  function renderIcons() {
+    layer.replaceChildren();
+    rects.forEach((r,i)=>{
+      const icon=document.createElement('div');
+      icon.className='demo-icon';icon.style.left=`${r.x}px`;icon.style.top=`${r.y}px`;
+      icon.innerHTML=`${fileIcon}<span>文件 ${i+1}</span>`;
+      icon.addEventListener('pointerdown',e=>{
+        e.preventDefault();icon.setPointerCapture(e.pointerId);
+        const offsetX=e.clientX-r.x,offsetY=e.clientY-r.y;
+        const move=ev=>{
+          r.x=clamp(ev.clientX-offsetX,0,innerWidth-r.w);
+          r.y=clamp(ev.clientY-offsetY,0,innerHeight-r.h);
+          icon.style.left=`${r.x}px`;icon.style.top=`${r.y}px`;
+          setIconRects(rects);
+        };
+        icon.addEventListener('pointermove',move);
+        icon.addEventListener('pointerup',()=>icon.removeEventListener('pointermove',move),{once:true});
+      });
+      layer.append(icon);
+    });
+    setIconRects(rects);
+  }
+  document.getElementById('addIcon').onclick=()=>{
+    const i=rects.length;
+    rects.push({x:clamp(120+i*105,0,innerWidth-90),y:clamp(165+(i%3)*105,0,innerHeight-100),w:90,h:100});
+    renderIcons();
+  };
+  document.getElementById('removeIcon').onclick=()=>{if(rects.length){rects.pop();renderIcons();}};
+  renderIcons();
+}
+</script>
+</html>

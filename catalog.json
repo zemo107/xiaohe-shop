@@ -1,0 +1,304 @@
+[
+  {
+    "id": "P01",
+    "slug": "typography",
+    "title": "字体设计",
+    "en": "Pattern Lock",
+    "kind": "字体与动态设计",
+    "headline": "让一条轨迹，\n成为一种字。",
+    "intro": "从手机图案锁的九点连线出发，把解锁时留下的运动轨迹转译成字母。作品延伸到字重、句子组合、动态字形与海报应用，让字体既能被阅读，也能被观看。",
+    "cover": "type-report-01",
+    "theme": "type",
+    "contents": [
+      "创意来源与字形规则",
+      "字重与应用推演",
+      "字形、句子及海报动态"
+    ],
+    "source": "外接盘设计报告、字形推演；原作品集三段视频",
+    "href": "projects/typography.html",
+    "status": "new"
+  },
+  {
+    "id": "P02",
+    "slug": "paper",
+    "title": "“煮妇”",
+    "en": "Her Place in the Everyday",
+    "kind": "主题纸塑",
+    "headline": "家务之间，\n她如何安放自己？",
+    "intro": "《煮妇》关注现代家庭中的女性困境，以厨房和日常生活器物呈现家务、照料责任与个人生活之间的拉扯。那些被视为理所当然的付出，以及被挤压的自我需求，是这组主题纸塑作品想让人看见的部分。",
+    "cover": "paper-微信图片_20261102011933_721_405",
+    "theme": "paper",
+    "contents": [
+      "现代家庭中的女性困境",
+      "系列全貌与器物组合",
+      "纸塑细节与手工表达"
+    ],
+    "source": "作品集内已整理的三张原作照片",
+    "href": "projects/paper.html",
+    "status": "new"
+  },
+  {
+    "id": "P03",
+    "slug": "photography",
+    "title": "摄影",
+    "en": "Studies in Light",
+    "kind": "摄影作业合集",
+    "headline": "光落下时，\n留下一种颜色。",
+    "intro": "这组摄影作业以人物、光影与色彩关系为线索，将拍摄画面与色彩提取、组图编排放在同一张页面中。这里保留完整作业合集的原有顺序与版式，连贯地观看每一组影像。",
+    "cover": "photo-collection-01",
+    "theme": "photo",
+    "contents": [
+      "18 页完整摄影作业合集",
+      "原有组图与色彩分析",
+      "逐页阅读和放大查看"
+    ],
+    "source": "外接盘已整理的摄影作业合集 PDF；未混入散图",
+    "href": "projects/photography.html",
+    "status": "new"
+  },
+  {
+    "id": "P04",
+    "slug": "yugui",
+    "title": "与归",
+    "en": "Form & Returning",
+    "kind": "三维造型设计",
+    "headline": "一处栖身，\n一种归意。",
+    "intro": "以鸟笼为主体的三维造型设计，将飞鸟的姿态转化为顶部轮廓与装饰结构。作品围绕笼条、环形底座及浮雕纹样展开，在整体剪影和局部细节之间建立联系。",
+    "cover": "yugui-IMG_3649",
+    "theme": "yugui",
+    "contents": [
+      "完整造型",
+      "顶部飞鸟与笼体结构",
+      "环形纹样及局部模型"
+    ],
+    "source": "作品集内与归模型图、细节图与原排版",
+    "href": "projects/yugui.html",
+    "status": "new"
+  },
+  {
+    "id": "P05",
+    "slug": "printmaking",
+    "title": "版画",
+    "en": "Marks in Blue",
+    "kind": "版画作品",
+    "headline": "刀痕之间，\n让形象浮现。",
+    "intro": "以人物与菩萨造像为灵感的版画作品，尝试通过刻线、黑白关系与蓝色印迹塑造形象。观看的重点是刀痕如何组织画面，以及纸面上保留下来的印刷质感。",
+    "cover": "print-微信图片_20261101235659_705_405",
+    "theme": "print",
+    "contents": [
+      "蓝色印迹作品",
+      "黑白造像作品",
+      "原作整体与刻线细节"
+    ],
+    "source": "作品集内三张版画原作图",
+    "href": "projects/printmaking.html",
+    "status": "new"
+  },
+  {
+    "id": "P06",
+    "slug": "taste",
+    "title": "味觉工作坊",
+    "en": "A Taste of Memory",
+    "kind": "参与式工作坊",
+    "headline": "回（ ）吃饭。",
+    "intro": "从味道唤起的私人记忆出发，通过品尝、桌布上的绘画与讲述、共同制作一锅汤，把各自的生活经验带回同一张餐桌。项目包含工作坊过程、视觉物料、展陈与影像记录。",
+    "cover": "taste-DSC01051",
+    "theme": "taste",
+    "contents": [
+      "工作坊概念与流程",
+      "物料和展陈",
+      "《回（ ）吃饭》影像"
+    ],
+    "source": "作品集照片；外接盘工作坊方案、展陈物料与剪辑视频",
+    "href": "projects/taste.html",
+    "status": "new"
+  },
+  {
+    "id": "P07A",
+    "slug": "yixin",
+    "title": "艺心创赛项目",
+    "en": "Yixin Studio",
+    "kind": "项目策划与品牌视觉",
+    "headline": "让艺术表达，\n走进真实生活。",
+    "intro": "“艺心”表达性艺术疗愈工作室围绕艺术表达、课程与工具、基层服务开展项目探索。这里从创赛路演出发，呈现如何把项目逻辑组织成可沟通的方案，再延伸到品牌应用与活动现场。",
+    "cover": "yixin-slide-01",
+    "theme": "yixin",
+    "contents": [
+      "项目方案与路演 PPT",
+      "品牌与主题视觉",
+      "活动策划和执行记录"
+    ],
+    "source": "已整理的艺心路演、品牌和现场资料",
+    "role": "我的参与：路演 PPT、品牌／主题视觉、项目策划、活动执行。LOGO 为团队合作成果。",
+    "href": "projects/yixin.html",
+    "status": "new"
+  },
+  {
+    "id": "P07B",
+    "slug": "visual",
+    "title": "主题视觉",
+    "en": "From Theme to Experience",
+    "kind": "活动与展览视觉",
+    "headline": "把一个主题，\n铺展成一次体验。",
+    "intro": "以“听见微幸福”与“蛹化蝶梦”为两个案例，呈现主视觉如何延伸为海报、活动指引、互动卡片和展览现场。视觉设计与参与流程一起展开，让观众能够辨认主题，也能够进入活动。",
+    "cover": "listen-成果展览海报",
+    "theme": "visual",
+    "contents": [
+      "听见微幸福：声音、手作与展览",
+      "蛹化蝶梦：主视觉与互动卡片",
+      "应用物料、现场和视频"
+    ],
+    "source": "已整理的艺心主题视觉原稿、输出图和现场资料",
+    "role": "我的参与：品牌／主题视觉、项目策划与活动执行；现场中的合作与参与者作品按项目背景呈现。",
+    "href": "projects/visual.html",
+    "status": "new"
+  },
+  {
+    "id": "P08",
+    "slug": "hanyuan",
+    "title": "寒源",
+    "en": "Hanyuan · The Pursuer",
+    "kind": "游戏原型与角色设计",
+    "headline": "在极寒中，\n为彼此争取时间。",
+    "intro": "前文明能源网络崩溃后，人类在冰原上探索遗迹、修复热源。《寒源》以修机与引猎之间的协作为核心，呈现非对称追逃的游戏原型，以及与玩法职责相联系的角色设计。Michael 作为引猎者，属于同一项目。",
+    "cover": "michael-dossier-v9",
+    "theme": "hanyuan",
+    "contents": [
+      "运行画面与角色分工",
+      "米歇尔人物设定与极寒档案整版",
+      "其他角色的设计尝试"
+    ],
+    "source": "寒源原型截图、角色设计尝试、米歇尔已确认设定与新版极寒档案",
+    "href": "projects/hanyuan.html",
+    "status": "new"
+  },
+  {
+    "id": "P09",
+    "slug": "illustration",
+    "title": "插画",
+    "en": "Characters & Little Worlds",
+    "kind": "插画练习",
+    "headline": "一些角色，\n一些想象中的日常。",
+    "intro": "以角色神态、动作与色彩氛围为重点的插画练习合集。不同画面尝试不同的构图与情绪表达，保留从线稿、单人形象到场景叙事的变化。",
+    "cover": "illust-IMG_0272",
+    "theme": "illustration",
+    "contents": [
+      "角色与场景插画",
+      "色彩与构图练习",
+      "线稿及不同表现方式"
+    ],
+    "source": "作品集内已整理的五张插画；Michael 归入寒源",
+    "href": "projects/illustration.html",
+    "status": "new"
+  },
+  {
+    "id": "P10",
+    "slug": "sea",
+    "title": "海上自适应壁纸",
+    "en": "An Adaptive Seascape",
+    "kind": "可交互壁纸原型",
+    "intro": "把桌面变成一片可随图标布局变化的海。浏览器演示中可以拖动模拟图标区域，观察云团与帆船如何调整位置；这是布局响应原型，真实 Finder 图标跟随仍需实机验证。",
+    "cover": "sea-cover",
+    "existing": "experiences/sea/wallpaper.html?demo=1",
+    "contents": [
+      "拖动模拟图标区域",
+      "云团聚散与帆船位置响应"
+    ],
+    "source": "现有壁纸网页及依赖，原样复制",
+    "href": "experiences/sea/wallpaper.html?demo=1",
+    "status": "existing"
+  },
+  {
+    "id": "P11",
+    "slug": "dongjiang",
+    "title": "东江渔场",
+    "en": "A Fishery in a Box",
+    "kind": "儿童手作玩具",
+    "headline": "把一座渔场，\n装进小小的盒子。",
+    "intro": "从实地调研、儿童需求与样品反馈出发，逐步完成场景搭建、手工塑形、上色、图鉴和包装。《东江渔场》把制作过程与可拆开游玩的玩具放在一起，也保留了一段手作日常影像。",
+    "cover": "fish-13_内容物展示",
+    "theme": "fish",
+    "contents": [
+      "调研与儿童需求",
+      "样品反馈、塑形和上色",
+      "包装、图鉴、玩法及 vlog"
+    ],
+    "source": "已整理的 15 页过程图与手作 vlog",
+    "href": "projects/dongjiang.html",
+    "status": "new"
+  },
+  {
+    "id": "P12",
+    "slug": "wake",
+    "title": "醒来｜日常的回声",
+    "en": "Echoes of the Everyday",
+    "kind": "网页交互体验",
+    "intro": "在梦境般的场景中漫游，观察并旋转日常物件，收集由它们唤起的记忆。作品以探索、停留和回望构成体验，最终留下属于自己的落款。",
+    "cover": "wake-cover",
+    "existing": "experiences/wake/index.html",
+    "contents": [
+      "梦境漫游",
+      "日常物件观察与旋转",
+      "记忆收集与落款"
+    ],
+    "source": "灵感夹当前《日常的回声》网页；未使用旧版《遗失的姓名》",
+    "href": "experiences/wake/index.html",
+    "status": "existing"
+  },
+  {
+    "id": "P13",
+    "slug": "shift",
+    "title": "滑轨换班",
+    "en": "The Other Shift",
+    "kind": "桌面交互原型",
+    "intro": "用一次主动滑动，为工作与休息划出边界。拖动黑猫滑块并确认下班后，界面切换到安静的花园；交接与备忘是可选步骤，重新打开也保留休息状态。真实 AI 事务接管仍属于后续设想。",
+    "cover": "shift-cover",
+    "existing": "experiences/shift/index.html",
+    "contents": [
+      "拖动与下班确认",
+      "花园休息状态",
+      "可选交接与备忘"
+    ],
+    "source": "现有滑轨换班网页与视频、字体依赖，原样复制",
+    "href": "experiences/shift/index.html",
+    "status": "existing"
+  },
+  {
+    "id": "P14",
+    "slug": "stone",
+    "title": "石雕模拟器",
+    "en": "A Small Stone Studio",
+    "kind": "三维交互原型",
+    "intro": "在浏览器里围绕一块石头进行绘制、雕刻、打磨与装饰，观察形体在操作中变化。项目把工具、碎屑与作品展示组织成一个小型工作台，并提供浏览器本地保存。",
+    "cover": "stone-cover",
+    "existing": "experiences/stone/index.html",
+    "contents": [
+      "图纸绘制与雕刻",
+      "打磨、装饰与碎屑清理",
+      "本地保存与作品展示架"
+    ],
+    "source": "石间目录内当前网页原型及运行依赖，原样复制",
+    "href": "experiences/stone/index.html",
+    "status": "existing"
+  },
+  {
+    "id": "P15",
+    "slug": "lithos",
+    "title": "LITHOS · 石之国",
+    "en": "A Journey of Becoming",
+    "kind": "游戏概念探索",
+    "headline": "每一道刻痕，\n都是一次取舍。",
+    "intro": "在石之国，形状是通行的法则。一个尚未定型的原石旅人，通过雕刻改变自己，也留下不可逆的刻痕。项目借助无文本的叙事设想与几何化场景，探索改变、磨损、羁绊与自我接纳。",
+    "cover": "LITHOS_几何石林_场景概念_v2",
+    "theme": "lithos",
+    "contents": [
+      "世界观与核心机制设想",
+      "原始角色草图",
+      "四张几何场景概念"
+    ],
+    "source": "原始角色草图、已确认项目设定与四张 AI 辅助场景概念",
+    "note": "概念阶段，尚无完整可玩版本。场景图为 AI 辅助视觉探索，角色草图为原作。",
+    "href": "projects/lithos.html",
+    "status": "new"
+  }
+]

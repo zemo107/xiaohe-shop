@@ -1,0 +1,21 @@
+/* The selected title artwork and a single entry button. */
+#opening{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;overflow:hidden;background:#fff8e8;transition:opacity .6s,transform .6s}
+#opening.leaving{opacity:0;transform:scale(1.025);pointer-events:none}
+.intro-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.intro-content{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px 40px}
+.intro-stage{width:min(1060px,92vw);padding:18px 0 24px;position:relative;flex-shrink:1}
+.intro-title-rig{width:100%;aspect-ratio:var(--art-ratio);position:relative;transform-origin:50% 72%;opacity:0;will-change:transform}
+.intro-composite,.intro-title-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain}
+.intro-title-canvas,.intro-prop{display:none}
+.intro-prop{position:absolute;transform-origin:50% 62%;opacity:0;will-change:transform}
+.intro-prop img{width:100%;height:100%;display:block}
+.intro-layered .intro-composite{display:none}.intro-layered .intro-title-canvas,.intro-layered .intro-prop{display:block}
+.intro-static .intro-composite{display:block}.intro-static .intro-title-canvas,.intro-static .intro-prop{display:none}
+.intro-controls{text-align:center;position:relative;opacity:0;flex-shrink:0}
+#enter-game{min-width:168px;border-radius:40px;background:#567331;color:#fff9e8;border:1px solid #567331;padding:13px 24px;font:13px/1.4 var(--round);letter-spacing:.09em;cursor:pointer;transition:background .2s,box-shadow .2s}
+#enter-game span{display:inline-block;margin-left:27px;font-size:17px;line-height:1}
+#enter-game:hover{background:#688538;box-shadow:0 5px 18px #56733116}#enter-game:active{transform:scale(.97)}#enter-game:disabled{cursor:default}
+.intro-reduced .intro-title-rig,.intro-reduced .intro-controls{opacity:1}
+@media(max-width:700px){.intro-content{padding:24px 13px 40px}.intro-stage{width:100%;padding:18px 0 30px}#enter-game{font-size:12px;min-width:156px;padding:12px 22px}}
+@media(max-height:640px) and (min-width:701px){.intro-stage{width:min(810px,80vw);padding:5px 0 15px}.intro-content{padding:12px 20px 20px}#enter-game{padding:10px 21px}}
+@media(prefers-reduced-motion:reduce){#opening{transition:opacity .2s}#enter-game{transition:none}}
