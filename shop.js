@@ -40,8 +40,41 @@ frame.addEventListener('load',()=>{if(frame.getAttribute('src')!=='about:blank')
 $('#retry-scene').addEventListener('click',()=>location.reload());
 function resetPlayer(){player.set(0,stage==='exterior'?1.82:1.78,stage==='exterior'?9.7:1.65);yaw=0;pitch=stage==='exterior'?.09:-.045;keys.clear();clearPointer();}
 $('#go-start').addEventListener('click',()=>{audio.play('select');resetPlayer()});
-function progress(n,word){n=Math.round(n);$('#progress-fill').style.width=n+'%';$('#progress-walker').style.left=n+'%';$('#load-progress').textContent=n+'%';$('.progress-track').setAttribute('aria-valuenow',String(n));if(word)$('#load-step').textContent=word;}
-function loadModel(url){return new Promise((resolve,reject)=>new GLTFLoader().load(url,resolve,e=>{if(e.total)progress(8+e.loaded/e.total*79,'正在搬入模型与材质')},reject))}
+let loadingProgress=0;
+function progress(n,word){
+ if(Number.isFinite(n))loadingProgress=n===0?0:Math.max(loadingProgress,Math.min(100,Math.max(0,Math.round(n))));
+ $('.progress-track').style.setProperty('--progress',loadingProgress+'%');
+ $('#load-progress').textContent=loadingProgress+'%';
+ $('.progress-track').setAttribute('aria-valuenow',String(loadingProgress));
+ if(word)$('#load-step').textContent=word;
+}
+async function loadModel(url){
+ const response=await fetch(url);
+ if(!response.ok)throw Error('Model download failed: '+response.status);
+ const reader=response.body?.getReader();
+ let buffer;
+ if(reader){
+  const chunks=[],header=new Uint8Array(12);
+  let loaded=0,headerLength=0,total=0;
+  while(true){
+   const {done,value}=await reader.read();
+   if(done)break;
+   chunks.push(value);loaded+=value.byteLength;
+   if(headerLength<header.length){
+    const count=Math.min(header.length-headerLength,value.byteLength);
+    header.set(value.subarray(0,count),headerLength);headerLength+=count;
+    // The GLB header describes decoded bytes; HTTP Content-Length may describe gzip bytes.
+    if(headerLength===header.length){const view=new DataView(header.buffer);if(view.getUint32(0,true)===0x46546c67)total=view.getUint32(8,true);}
+   }
+   if(total>0)progress(8+Math.min(loaded/total,1)*79,'正在搬入模型与材质');
+  }
+  const bytes=new Uint8Array(loaded);let offset=0;
+  for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  buffer=bytes.buffer;
+ }else buffer=await response.arrayBuffer();
+ progress(87,'正在组装场景');
+ return new GLTFLoader().parseAsync(buffer,new URL('.',new URL(url,location.href)).href);
+}
 // The clerk is being revised. Keep source files intact and omit its scene nodes.
 function omitClerk(model){
  const remove=[];
