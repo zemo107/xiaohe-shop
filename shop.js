@@ -21,10 +21,54 @@ let pointerPosition=null;
 const keys=new Set(),player=new THREE.Vector3(0,1.82,9.7),floatingProducts=new Map();
 let lastTime=performance.now();
 const isModal=()=>linksDialog.open||workDialog.open||helpDialog.open||!$('#opening').hidden||!$('#loading').hidden||!$('#sound-settings').hidden;
+const guide=$('#gesture-guide');
+const guideState={dismissed:false,viewedWork:false,mode:null};
+const guidePoint=new THREE.Vector3();
+let guideDoorBounds;
+function hideGuide(){guide.hidden=true;}
+function renderGuide(mode){
+ const touch=matchMedia('(max-width:700px)').matches;
+ if(guideState.mode===mode&&guideState.touch===touch)return;
+ guideState.mode=mode;guideState.touch=touch;guide.dataset.step=mode;
+ guide.classList.toggle('touch-guide',touch);
+ $('#guide-label').textContent=mode==='walk'?(touch?'拖动走近':'W / ↑ 走近'):mode==='door'?'点击进入':'点击查看';
+ $('#guide-detail').textContent=mode==='walk'
+  ?(touch?'拖动左下圆盘向前走，滑动画面转动视角':'按住 W 或上方向键走到门前，按住鼠标右键拖动转动视角')
+  :mode==='door'?'点击小门进入商店':'点击商品打开作品，看完后回到商店继续逛';
+}
+function updateGuide(){
+ if(!ready||busy||isModal()||guideState.dismissed||!['exterior','interior'].includes(stage)||(stage==='interior'&&guideState.viewedWork)){hideGuide();return;}
+ if(stage==='exterior'&&!guideDoorBounds)guideDoorBounds=new THREE.Box3().setFromObject(door);
+ const mode=stage==='interior'?'work':guideDoorBounds.distanceToPoint(camera.position)<2.25?'door':'walk';
+ renderGuide(mode);
+ // Point at the mobile movement control until the visitor is close to the door.
+ if(mode==='walk'&&guideState.touch){
+  const pad=$('#touch-pad').getBoundingClientRect();
+  guide.style.left=(pad.x+pad.width/2-18)+'px';guide.style.top=Math.min(innerHeight-108,pad.y+pad.height/2-12)+'px';guide.hidden=false;return;
+ }
+ if(mode==='door'||mode==='walk')guideDoorBounds.getCenter(guidePoint);
+ else{
+  const id=floatingProducts.has(targetId)?targetId:'P01';
+  const item=floatingProducts.get(id);
+  if(!item){hideGuide();return;}
+  const product=productMap.projects.find(p=>p.id===id);
+  if(product){guidePoint.set(...product.center);guidePoint.y+=item.lift;}
+  else new THREE.Box3().setFromObject(item.object).getCenter(guidePoint);
+ }
+ guidePoint.project(camera);
+ const x=(guidePoint.x+1)*innerWidth/2,y=(1-guidePoint.y)*innerHeight/2;
+ // Hide the gesture when its object leaves the view instead of pinning it to an unrelated corner.
+ if(guidePoint.z< -1||guidePoint.z>1||x<0||x>innerWidth||y<90||y>innerHeight-80){hideGuide();return;}
+ guide.style.left=Math.max(12,Math.min(innerWidth-116,x+12))+'px';
+ guide.style.top=Math.max(96,Math.min(innerHeight-116,y+12))+'px';
+ guide.hidden=false;
+}
+$('#dismiss-guide').addEventListener('click',()=>{guideState.dismissed=true;hideGuide();helpDialog.close();});
+$('#replay-guide').addEventListener('click',()=>{guideState.dismissed=false;guideState.viewedWork=false;guideState.mode=null;helpDialog.close();updateGuide();});
 function clearPointer(){pointerPosition=null;setTarget(null);}
 function releaseMouse(){keys.clear();joystick.x=joystick.y=0;drag=null;canvas.classList.remove('looking');clearPointer();}
 $('#sound-settings-toggle').addEventListener('click',releaseMouse);
-function modalOpen(dialog){releaseMouse();if(dialog===workDialog)audio.setDetail(true);dialog.showModal();document.body.classList.add('dialog-open');}
+function modalOpen(dialog){releaseMouse();hideGuide();if(dialog===workDialog)audio.setDetail(true);dialog.showModal();document.body.classList.add('dialog-open');}
 function modalClose(){document.body.classList.remove('dialog-open');releaseMouse();audio.setDetail(workDialog.open);if(!workDialog.open)audio.play('close');}
 function showLinks(){audio.play('select');modalOpen(linksDialog);$('#links-search').focus();}
 ['#show-links','#fallback-links'].forEach(id=>$(id).addEventListener('click',showLinks));
@@ -32,7 +76,7 @@ $$('[data-close-links]').forEach(b=>b.addEventListener('click',()=>linksDialog.c
 for(const p of catalog){const row=document.createElement('div');row.className='link-row';row.dataset.search=(p.title+' '+p.en+' '+p.kind).toLowerCase();const id=document.createElement('span');id.className='link-id';id.textContent=p.id;const label=document.createElement('div'),title=document.createElement('a'),url=document.createElement('span');title.href=p.href;title.className='link-title';title.textContent=p.title;url.className='link-url';url.textContent=p.href;label.append(title,url);const actions=document.createElement('div');actions.className='link-actions';const copy=document.createElement('button');copy.textContent='复制链接';copy.addEventListener('click',async()=>{const value=new URL(p.href,location.href).href;try{await navigator.clipboard.writeText(value)}catch{const tmp=document.createElement('textarea');tmp.value=value;document.body.append(tmp);tmp.select();document.execCommand('copy');tmp.remove();}$('#links-status').textContent=`已复制「${p.title}」的独立链接`;audio.play('confirm');});const open=document.createElement('button');open.textContent='打开 ↗';const use=e=>{e?.preventDefault();linksDialog.close();openWork(p)};open.addEventListener('click',use);title.addEventListener('click',use);actions.append(copy,open);row.append(id,label,actions);$('#link-list').append(row);}
 $('#links-search').addEventListener('input',e=>{$$('.link-row').forEach(row=>row.hidden=!row.dataset.search.includes(e.target.value.trim().toLowerCase()))});
 $('#show-help').addEventListener('click',()=>{audio.play('select');modalOpen(helpDialog)});['#close-help','#help-done'].forEach(id=>$(id).addEventListener('click',()=>helpDialog.close()));helpDialog.addEventListener('close',modalClose);
-function openWork(p){if(!p)return;audio.play('open');$('#reader-title').textContent=p.title;$('#reader-standalone').href=p.href;frame.title=p.title+' · 作品网页';$('#work-loading-label').textContent='正在打开「'+p.title+'」';$('#work-loading').hidden=false;frame.setAttribute('aria-busy','true');frame.src=p.href;modalOpen(workDialog);$('#close-work').focus();}
+function openWork(p){if(!p)return;if(stage==='interior')guideState.viewedWork=true;audio.play('open');$('#reader-title').textContent=p.title;$('#reader-standalone').href=p.href;frame.title=p.title+' · 作品网页';$('#work-loading-label').textContent='正在打开「'+p.title+'」';$('#work-loading').hidden=false;frame.setAttribute('aria-busy','true');frame.src=p.href;modalOpen(workDialog);$('#close-work').focus();}
 $('#close-work').addEventListener('click',()=>workDialog.close());workDialog.addEventListener('close',()=>{frame.src='about:blank';modalClose()});
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.type==='portfolio:return-to-shop')workDialog.close()});
 // Escape works even when focus is inside the existing web experiences.
@@ -98,7 +142,7 @@ function bindSelectable(id,obj,hitList,height=.1){
  });
 }
 function finishLoading(){progress(100,'准备好啦');setTimeout(()=>{$('#loading').classList.add('finished');setTimeout(()=>{$('#loading').hidden=true;ready=true;$('#game-hud').hidden=false},reduced?0:650)},reduced?0:250)}
-async function showOpening(){audio.setScene('opening');document.body.classList.add('title-screen');releaseMouse();ready=false;$('#game-hud').hidden=true;$('#opening').hidden=false;$('#opening').classList.remove('leaving');$('#enter-game').disabled=false;
+async function showOpening(){hideGuide();audio.setScene('opening');document.body.classList.add('title-screen');releaseMouse();ready=false;$('#game-hud').hidden=true;$('#opening').hidden=false;$('#opening').classList.remove('leaving');$('#enter-game').disabled=false;
  await opening.play();
  if($('#opening').hidden||busy)return;
  audio.playOpening();
@@ -211,7 +255,7 @@ function move(dt){let forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.
  const ground=stage==='exterior'?THREE.MathUtils.clamp((3.6-player.z)/.8,0,1)*.39+.12:.2;player.y=ground+1.57;return true;}
 function updateCamera(bob=0){camera.position.copy(player);camera.position.y+=bob;camera.rotation.set(pitch,yaw,0,'YXZ');camera.updateMatrixWorld()}
 function resize(){if(!renderer)return;renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}
-function fail(error){document.body.classList.remove('title-screen');console.error(error);ready=false;busy=false;$('#loading').hidden=true;$('#opening').hidden=true;$('#scene-error').hidden=false;}
+function fail(error){hideGuide();document.body.classList.remove('title-screen');console.error(error);ready=false;busy=false;$('#loading').hidden=true;$('#opening').hidden=true;$('#scene-error').hidden=false;}
 let outsideSun,interiorSun,fill,indoorLights=[];
 try{
  renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.07;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -220,7 +264,7 @@ try{
  interiorSun=new THREE.DirectionalLight(0xffedcb,1.6);interiorSun.position.set(-5,6,3);interiorSun.castShadow=true;interiorSun.shadow.mapSize.set(2048,2048);Object.assign(interiorSun.shadow.camera,{left:-5,right:5,top:5,bottom:-5,near:.2,far:18});interiorSun.shadow.normalBias=.018;interiorSun.visible=false;scene.add(interiorSun);
  for(const x of [-1.5,1.5]){const l=new THREE.PointLight(0xffe8bd,15,6,2);l.position.set(x,2.64,-.35);l.visible=false;scene.add(l);indoorLights.push(l)}
  resize();window.addEventListener('resize',resize);progress(4,'正在准备屋外场景');const gltf=await loadModel('./models/exterior-original.glb?v=profile-1');progress(94,'门口见');exterior=gltf.scene;omitClerk(exterior);prepare(exterior);scene.add(exterior);door=exterior.getObjectByName('Outside_door');if(!door)throw Error('Existing exterior door was not exported');door.traverse(o=>{if(o.isMesh){o.userData.projectId='door';exteriorHits.push(o)}});exterior.updateMatrixWorld(true);bindSelectable('about-outside',exterior.getObjectByName('Outside_profile'),exteriorHits,.055);stage='exterior';resetPlayer();updateCamera();renderer.render(scene,camera);finishLoading();
- function tick(now){requestAnimationFrame(tick);const dt=Math.min(.04,(now-lastTime)/1000);lastTime=now;if(ready&&!isModal()&&!busy)move(dt);updateCamera();aim();animateProducts(dt,now);if(!document.hidden&&!workDialog.open&&$('#opening').hidden)renderer.render(scene,camera);}
+ function tick(now){requestAnimationFrame(tick);const dt=Math.min(.04,(now-lastTime)/1000);lastTime=now;if(ready&&!isModal()&&!busy)move(dt);updateCamera();aim();animateProducts(dt,now);updateGuide();if(!document.hidden&&!workDialog.open&&$('#opening').hidden)renderer.render(scene,camera);}
  requestAnimationFrame(tick);
  window.portfolioScene={camera,player,get stage(){return stage},get ready(){return ready},get target(){return targetId},get productIds(){return productMap?.projects.map(p=>p.id)||[]},get angles(){return {yaw,pitch}},projectScreenPoint(id){const p=productMap?.projects.find(p=>p.id===id);if(!p)return;const v=new THREE.Vector3(...p.center);v.y+=floatingProducts.get(id)?.lift||0;v.project(camera);return{x:(v.x+1)/2*innerWidth,y:(1-v.y)/2*innerHeight}},get model(){return interior||exterior}};
 }catch(error){fail(error)}
