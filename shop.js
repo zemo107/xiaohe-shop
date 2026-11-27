@@ -37,7 +37,7 @@ function updateProfileGuide(){
  profileGuidePoint.project(camera);
  const x=(profileGuidePoint.x+1)*innerWidth/2,y=(1-profileGuidePoint.y)*innerHeight/2;
  if(profileGuidePoint.z< -1||profileGuidePoint.z>1||x<0||x>innerWidth||y<90||y>innerHeight-80)return;
- profileGuide.style.left=Math.max(12,Math.min(innerWidth-116,x+116>innerWidth?x-100:x+12))+'px';
+ profileGuide.style.left=Math.max(12,Math.min(innerWidth-116,x+116>innerWidth?x-68:x+44))+'px';
  profileGuide.style.top=Math.max(96,Math.min(innerHeight-178,y-62))+'px';
  profileGuide.hidden=false;
 }
