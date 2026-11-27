@@ -48,14 +48,21 @@ function updateGuide(){
  }
  if(mode==='door'||mode==='walk')guideDoorBounds.getCenter(guidePoint);
  else{
-  const id=floatingProducts.has(targetId)?targetId:'P01';
-  const item=floatingProducts.get(id);
-  if(!item){hideGuide();return;}
-  const product=productMap.projects.find(p=>p.id===id);
-  if(product){guidePoint.set(...product.center);guidePoint.y+=item.lift;}
-  else new THREE.Box3().setFromObject(item.object).getCenter(guidePoint);
+  // Narrow screens may crop the default item; point at a visible product instead.
+  const candidates=[targetId,'P01',...productMap.projects.map(p=>p.id)];
+  let found=false;
+  for(const id of candidates){
+   const item=floatingProducts.get(id);
+   if(!item)continue;
+   const product=productMap.projects.find(p=>p.id===id);
+   if(product){guidePoint.set(...product.center);guidePoint.y+=item.lift;}
+   else new THREE.Box3().setFromObject(item.object).getCenter(guidePoint);
+   guidePoint.project(camera);
+   if(guidePoint.z>=-1&&guidePoint.z<=1&&Math.abs(guidePoint.x)<.9&&Math.abs(guidePoint.y)<.75){found=true;break;}
+  }
+  if(!found){hideGuide();return;}
  }
- guidePoint.project(camera);
+ if(stage==='exterior')guidePoint.project(camera);
  const x=(guidePoint.x+1)*innerWidth/2,y=(1-guidePoint.y)*innerHeight/2;
  // Hide the gesture when its object leaves the view instead of pinning it to an unrelated corner.
  if(guidePoint.z< -1||guidePoint.z>1||x<0||x>innerWidth||y<90||y>innerHeight-80){hideGuide();return;}
