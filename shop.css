@@ -62,15 +62,15 @@
 .title-screen #sound-control{display:none}
 
 /* Quiet gestures sit beside the object and never intercept scene interactions. */
-#gesture-guide{position:absolute;z-index:12;width:104px;height:94px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:0;border:0;background:none;box-shadow:none;pointer-events:none;color:#4f6d51;opacity:.7}
+.scene-gesture{position:absolute;z-index:12;width:104px;height:94px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:0;border:0;background:none;box-shadow:none;pointer-events:none;color:#4f6d51;opacity:.7}
 .guide-gesture{position:relative;width:50px;height:58px;filter:drop-shadow(0 1px 2px #243e3826)}
 .guide-gesture svg{display:block;width:48px;height:54px;transform-origin:30% 10%;animation:guide-point 2.6s ease-in-out infinite}
 .guide-tap-ring{position:absolute;left:12px;top:-1px;width:16px;height:16px;border:1.5px solid currentColor;border-radius:50%;animation:guide-ripple 2.6s ease-out infinite}
-#guide-label{font:500 12px/1.5 var(--round);letter-spacing:.04em;white-space:nowrap;text-shadow:0 1px 3px #fffdf2,0 0 7px #fffdf2}
+.guide-label{font:500 12px/1.5 var(--round);letter-spacing:.04em;white-space:nowrap;text-shadow:0 1px 3px #fffdf2,0 0 7px #fffdf2}
 #gesture-guide[data-step=walk] .guide-tap-ring{display:none}
 #gesture-guide[data-step=walk] .guide-gesture svg{animation-name:guide-walk}
 .guide-replay{display:inline-block;margin:16px 18px 0 0;padding:4px 0;font-size:11px;color:#74876b;text-decoration:underline;text-underline-offset:4px}
 @keyframes guide-ripple{0%,55%,100%{opacity:0;transform:scale(.6)}18%{opacity:.7;transform:scale(.6)}45%{opacity:0;transform:scale(1.7)}}
 @keyframes guide-point{0%,60%,100%{transform:translate(4px,7px) rotate(-12deg)}24%,40%{transform:translate(0,0) rotate(-12deg)}}
 @keyframes guide-walk{0%,65%,100%{transform:translateY(6px) rotate(-12deg)}25%,45%{transform:translateY(-7px) rotate(-12deg)}}
-@media(max-width:700px){#gesture-guide{height:88px}.guide-gesture{width:44px;height:51px}.guide-gesture svg{width:42px;height:48px}#guide-label{font-size:11px}}
+@media(max-width:700px){.scene-gesture{height:88px}.guide-gesture{width:44px;height:51px}.guide-gesture svg{width:42px;height:48px}.guide-label{font-size:11px}}

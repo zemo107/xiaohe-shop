@@ -21,11 +21,26 @@ let pointerPosition=null;
 const keys=new Set(),player=new THREE.Vector3(0,1.82,9.7),floatingProducts=new Map();
 let lastTime=performance.now();
 const isModal=()=>linksDialog.open||workDialog.open||helpDialog.open||!$('#opening').hidden||!$('#loading').hidden||!$('#sound-settings').hidden;
-const guide=$('#gesture-guide');
-const guideState={dismissed:false,viewedWork:false,mode:null};
-const guidePoint=new THREE.Vector3();
-let guideDoorBounds;
-function hideGuide(){guide.hidden=true;}
+const guide=$('#gesture-guide'),profileGuide=$('#profile-guide');
+const guideState={dismissed:false,viewedWork:false,viewedProfile:false,mode:null};
+const guidePoint=new THREE.Vector3(),profileGuidePoint=new THREE.Vector3();
+let guideDoorBounds,profileGuideBounds;
+function hideGuide(){guide.hidden=true;profileGuide.hidden=true;}
+function updateProfileGuide(){
+ profileGuide.hidden=true;
+ if(stage!=='exterior'||(guideState.viewedProfile&&targetId!=='about-outside'))return;
+ const item=floatingProducts.get('about-outside');
+ if(!item)return;
+ if(!profileGuideBounds)profileGuideBounds=new THREE.Box3().setFromObject(item.object);
+ if(profileGuideBounds.distanceToPoint(camera.position)>3&&targetId!=='about-outside')return;
+ profileGuideBounds.getCenter(profileGuidePoint);profileGuidePoint.y+=item.lift;
+ profileGuidePoint.project(camera);
+ const x=(profileGuidePoint.x+1)*innerWidth/2,y=(1-profileGuidePoint.y)*innerHeight/2;
+ if(profileGuidePoint.z< -1||profileGuidePoint.z>1||x<0||x>innerWidth||y<90||y>innerHeight-80)return;
+ profileGuide.style.left=Math.max(12,Math.min(innerWidth-116,x+116>innerWidth?x-100:x+12))+'px';
+ profileGuide.style.top=Math.max(96,Math.min(innerHeight-178,y-62))+'px';
+ profileGuide.hidden=false;
+}
 function renderGuide(mode){
  const touch=matchMedia('(max-width:700px)').matches;
  if(guideState.mode===mode&&guideState.touch===touch)return;
@@ -38,6 +53,7 @@ function renderGuide(mode){
 }
 function updateGuide(){
  if(!ready||busy||isModal()||guideState.dismissed||!['exterior','interior'].includes(stage)||(stage==='interior'&&guideState.viewedWork)){hideGuide();return;}
+ updateProfileGuide();
  if(stage==='exterior'&&!guideDoorBounds)guideDoorBounds=new THREE.Box3().setFromObject(door);
  const mode=stage==='interior'?'work':guideDoorBounds.distanceToPoint(camera.position)<2.25?'door':'walk';
  renderGuide(mode);
@@ -60,18 +76,18 @@ function updateGuide(){
    guidePoint.project(camera);
    if(guidePoint.z>=-1&&guidePoint.z<=1&&Math.abs(guidePoint.x)<.9&&Math.abs(guidePoint.y)<.75){found=true;break;}
   }
-  if(!found){hideGuide();return;}
+  if(!found){guide.hidden=true;return;}
  }
  if(stage==='exterior')guidePoint.project(camera);
  const x=(guidePoint.x+1)*innerWidth/2,y=(1-guidePoint.y)*innerHeight/2;
  // Hide the gesture when its object leaves the view instead of pinning it to an unrelated corner.
- if(guidePoint.z< -1||guidePoint.z>1||x<0||x>innerWidth||y<90||y>innerHeight-80){hideGuide();return;}
+ if(guidePoint.z< -1||guidePoint.z>1||x<0||x>innerWidth||y<90||y>innerHeight-80){guide.hidden=true;return;}
  guide.style.left=Math.max(12,Math.min(innerWidth-116,x+12))+'px';
  guide.style.top=Math.max(96,Math.min(innerHeight-116,y+12))+'px';
  guide.hidden=false;
 }
 $('#dismiss-guide').addEventListener('click',()=>{guideState.dismissed=true;hideGuide();helpDialog.close();});
-$('#replay-guide').addEventListener('click',()=>{guideState.dismissed=false;guideState.viewedWork=false;guideState.mode=null;helpDialog.close();updateGuide();});
+$('#replay-guide').addEventListener('click',()=>{guideState.dismissed=false;guideState.viewedWork=false;guideState.viewedProfile=false;guideState.mode=null;helpDialog.close();updateGuide();});
 function clearPointer(){pointerPosition=null;setTarget(null);}
 function releaseMouse(){keys.clear();joystick.x=joystick.y=0;drag=null;canvas.classList.remove('looking');clearPointer();}
 $('#sound-settings-toggle').addEventListener('click',releaseMouse);
@@ -83,7 +99,7 @@ $$('[data-close-links]').forEach(b=>b.addEventListener('click',()=>linksDialog.c
 for(const p of catalog){const row=document.createElement('div');row.className='link-row';row.dataset.search=(p.title+' '+p.en+' '+p.kind).toLowerCase();const id=document.createElement('span');id.className='link-id';id.textContent=p.id;const label=document.createElement('div'),title=document.createElement('a'),url=document.createElement('span');title.href=p.href;title.className='link-title';title.textContent=p.title;url.className='link-url';url.textContent=p.href;label.append(title,url);const actions=document.createElement('div');actions.className='link-actions';const copy=document.createElement('button');copy.textContent='复制链接';copy.addEventListener('click',async()=>{const value=new URL(p.href,location.href).href;try{await navigator.clipboard.writeText(value)}catch{const tmp=document.createElement('textarea');tmp.value=value;document.body.append(tmp);tmp.select();document.execCommand('copy');tmp.remove();}$('#links-status').textContent=`已复制「${p.title}」的独立链接`;audio.play('confirm');});const open=document.createElement('button');open.textContent='打开 ↗';const use=e=>{e?.preventDefault();linksDialog.close();openWork(p)};open.addEventListener('click',use);title.addEventListener('click',use);actions.append(copy,open);row.append(id,label,actions);$('#link-list').append(row);}
 $('#links-search').addEventListener('input',e=>{$$('.link-row').forEach(row=>row.hidden=!row.dataset.search.includes(e.target.value.trim().toLowerCase()))});
 $('#show-help').addEventListener('click',()=>{audio.play('select');modalOpen(helpDialog)});['#close-help','#help-done'].forEach(id=>$(id).addEventListener('click',()=>helpDialog.close()));helpDialog.addEventListener('close',modalClose);
-function openWork(p){if(!p)return;if(stage==='interior')guideState.viewedWork=true;audio.play('open');$('#reader-title').textContent=p.title;$('#reader-standalone').href=p.href;frame.title=p.title+' · 作品网页';$('#work-loading-label').textContent='正在打开「'+p.title+'」';$('#work-loading').hidden=false;frame.setAttribute('aria-busy','true');frame.src=p.href;modalOpen(workDialog);$('#close-work').focus();}
+function openWork(p){if(!p)return;if(stage==='exterior'&&p===profile)guideState.viewedProfile=true;if(stage==='interior')guideState.viewedWork=true;audio.play('open');$('#reader-title').textContent=p.title;$('#reader-standalone').href=p.href;frame.title=p.title+' · 作品网页';$('#work-loading-label').textContent='正在打开「'+p.title+'」';$('#work-loading').hidden=false;frame.setAttribute('aria-busy','true');frame.src=p.href;modalOpen(workDialog);$('#close-work').focus();}
 $('#close-work').addEventListener('click',()=>workDialog.close());workDialog.addEventListener('close',()=>{frame.src='about:blank';modalClose()});
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.type==='portfolio:return-to-shop')workDialog.close()});
 // Escape works even when focus is inside the existing web experiences.
